@@ -12,5 +12,6 @@ import com.oauthprovider.models.GroupRequestModel;
 public interface UserGroupService {
 
     ResponseEntity<GroupDetailsModel> createGroup (GroupRequestModel request);
+    ResponseEntity<GroupDetailsModel> getGroup (String id);
     
 }
