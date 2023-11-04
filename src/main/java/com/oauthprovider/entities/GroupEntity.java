@@ -1,11 +1,5 @@
 package com.oauthprovider.entities;
 
-import java.util.UUID;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

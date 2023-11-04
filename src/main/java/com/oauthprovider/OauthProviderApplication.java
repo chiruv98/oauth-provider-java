@@ -5,6 +5,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import com.oauthprovider.exception.ErrorResponse;
+
 /* 
  * @author Chiranjeevi
 */
@@ -19,6 +21,11 @@ public class OauthProviderApplication {
 	@Bean
 	ModelMapper mapper() {
 		return new ModelMapper();
+	}
+
+	@Bean
+	ErrorResponse errorResponse() {
+		return new ErrorResponse();
 	}
 
 }

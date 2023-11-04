@@ -1,8 +1,5 @@
 package com.oauthprovider.services;
 
-import org.springframework.http.ResponseEntity;
-
-import com.oauthprovider.models.GroupDetailsModel;
 import com.oauthprovider.models.GroupRequestModel;
 
 /* 
@@ -11,7 +8,7 @@ import com.oauthprovider.models.GroupRequestModel;
 
 public interface UserGroupService {
 
-    ResponseEntity<GroupDetailsModel> createGroup (GroupRequestModel request);
-    ResponseEntity<GroupDetailsModel> getGroup (String id);
+    Object createGroup (GroupRequestModel request);
+    Object getGroup (String id);
     
 }

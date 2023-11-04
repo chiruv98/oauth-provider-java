@@ -2,7 +2,7 @@ package com.oauthprovider.models;
 
 import java.io.Serializable;
 
-import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -13,8 +13,11 @@ import lombok.Data;
 @Data
 public class GroupRequestModel implements Serializable{
 
-    @Valid
     @NotNull (message = "groupName cannot be Null")
+    @NotBlank (message = "groupName cannot be empty")
     private String groupName;
+
+    @NotNull (message = "description cannot be Null")
+    @NotBlank (message = "description cannot be empty")
     private String description;
 }

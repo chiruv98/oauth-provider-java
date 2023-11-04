@@ -1,5 +1,7 @@
 package com.oauthprovider.models;
 
+import java.io.Serializable;
+
 import lombok.Data;
 
 /* 
@@ -7,7 +9,7 @@ import lombok.Data;
 */
 
 @Data
-public class GroupDetailsModel {
+public class GroupDetailsModel implements Serializable{
     
     private String id;
     private String groupName;

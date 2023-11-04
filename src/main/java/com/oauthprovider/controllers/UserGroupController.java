@@ -1,7 +1,10 @@
 package com.oauthprovider.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,11 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.oauthprovider.models.GroupRequestModel;
+import com.oauthprovider.exception.ErrorResponse;
+import com.oauthprovider.exception.GlobalExceptionHandler;
 import com.oauthprovider.models.GroupDetailsModel;
 import com.oauthprovider.services.UserGroupService;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.websocket.server.PathParam;
 import lombok.extern.slf4j.Slf4j;
 
 /* 
@@ -31,15 +36,31 @@ public class UserGroupController {
     @Autowired
     private UserGroupService userGroupService;
 
+    @Autowired
+    private GlobalExceptionHandler exceptionHandler;
+
     @PostMapping (path = "/group")
-    public ResponseEntity<GroupDetailsModel> createGroup(@RequestBody GroupRequestModel request) {
-        return userGroupService.createGroup(request);
+    public ResponseEntity<?> createGroup(@Valid @RequestBody GroupRequestModel request) {
+
+        if (request.getDescription() == null || request.getDescription().isEmpty()) {
+            ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+            String currentUri = attr.getRequest().getRequestURI().toString();
+            ErrorResponse errorResponse = exceptionHandler.handleCustomException(
+                400, 
+                "1234", 
+                "Description cannot be null or empty", 
+                "Bad Request",
+                currentUri);
+            return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>((GroupDetailsModel) userGroupService.createGroup(request), HttpStatus.OK);
     }
 
     @GetMapping (path = "/group/{groupId}")
     public ResponseEntity<GroupDetailsModel> getGroup(@PathVariable("groupId") @NotNull String id) {
         log.info("id: {}", id);
-        return userGroupService.getGroup(id);
+        return new ResponseEntity<>((GroupDetailsModel) userGroupService.getGroup(id), HttpStatus.OK); 
     }
 
     @GetMapping (path = "/hello")
