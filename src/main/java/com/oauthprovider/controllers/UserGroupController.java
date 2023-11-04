@@ -6,6 +6,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,9 +41,9 @@ public class UserGroupController {
     private GlobalExceptionHandler exceptionHandler;
 
     @PostMapping (path = "/group")
-    public ResponseEntity<?> createGroup(@Valid @RequestBody GroupRequestModel request) {
+    public ResponseEntity<?> createGroup(@Valid @RequestBody GroupRequestModel request) throws MethodArgumentNotValidException {
 
-        if (request.getDescription() == null || request.getDescription().isEmpty()) {
+        /* if (request.getDescription() == null || request.getDescription().isEmpty()) {
             ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             String currentUri = attr.getRequest().getRequestURI().toString();
             ErrorResponse errorResponse = exceptionHandler.handleCustomException(
@@ -52,7 +53,7 @@ public class UserGroupController {
                 "Bad Request",
                 currentUri);
             return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.BAD_REQUEST);
-        }
+        } */
 
         return new ResponseEntity<>((GroupDetailsModel) userGroupService.createGroup(request), HttpStatus.OK);
     }
