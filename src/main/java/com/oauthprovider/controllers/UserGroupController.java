@@ -3,6 +3,10 @@ package com.oauthprovider.controllers;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,17 +47,19 @@ public class UserGroupController {
     @PostMapping (path = "/group")
     public ResponseEntity<?> createGroup(@Valid @RequestBody GroupRequestModel request) throws MethodArgumentNotValidException {
 
-        /* if (request.getDescription() == null || request.getDescription().isEmpty()) {
+        if (request.getGroupName().length() < 3) {
             ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             String currentUri = attr.getRequest().getRequestURI().toString();
+            List<String> message = new ArrayList<String>();
+            message.add("GroupName cannot be less than 3 characters");
             ErrorResponse errorResponse = exceptionHandler.handleCustomException(
                 400, 
                 "1234", 
-                "Description cannot be null or empty", 
+                message, 
                 "Bad Request",
                 currentUri);
             return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.BAD_REQUEST);
-        } */
+        }
 
         return new ResponseEntity<>((GroupDetailsModel) userGroupService.createGroup(request), HttpStatus.OK);
     }

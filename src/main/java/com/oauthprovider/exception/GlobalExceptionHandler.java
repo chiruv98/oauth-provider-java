@@ -1,10 +1,13 @@
 package com.oauthprovider.exception;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,18 +25,24 @@ public class GlobalExceptionHandler extends RuntimeException {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException (MethodArgumentNotValidException ex, WebRequest request) {
 
-        log.info("\n\n ---------- invoked ---------- \n\n");
+        log.info("\n\n---------------- INVOKED EXCEPTION HANDLER ----------------\n\n");
+
+        List<String> errorMessages = new ArrayList<String>();
+        for (FieldError msg : ex.getFieldErrors()) {
+            errorMessages.add(msg.getDefaultMessage());
+        }
+
         errorResponse.setRequestId(request.getSessionId());
         errorResponse.setTimeStamp(LocalDateTime.now());
         errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
         errorResponse.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
-        errorResponse.setMessage(ex.getMessage());
+        errorResponse.setMessage(errorMessages);
         errorResponse.setPath(request.getDescription(false));
 
         return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    public ErrorResponse handleCustomException(int status, String requestId, String message, String errorDesc, String uri) {
+    public ErrorResponse handleCustomException(int status, String requestId, List<String> message, String errorDesc, String uri) {
 
         errorResponse.setRequestId(requestId);
         errorResponse.setTimeStamp(LocalDateTime.now());
