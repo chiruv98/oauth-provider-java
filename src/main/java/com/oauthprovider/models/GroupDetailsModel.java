@@ -14,5 +14,7 @@ public class GroupDetailsModel implements Serializable{
     private String id;
     private String groupName;
     private String description;
+    //private String createdAt;
+    //private String modifiedAt;
 
 }

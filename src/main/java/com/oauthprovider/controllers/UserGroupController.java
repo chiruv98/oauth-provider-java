@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,18 +57,68 @@ public class UserGroupController {
                 400, 
                 "1234", 
                 message, 
-                "Bad Request",
+                "BAD_REQUEST",
                 currentUri);
             return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>((GroupDetailsModel) userGroupService.createGroup(request), HttpStatus.OK);
+        Object response = userGroupService.createGroup(request);
+
+        if (response.getClass() == ErrorResponse.class) {
+            return new ResponseEntity<ErrorResponse>((ErrorResponse) response, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<GroupDetailsModel>((GroupDetailsModel) response, HttpStatus.OK);
     }
 
     @GetMapping (path = "/group/{groupId}")
-    public ResponseEntity<GroupDetailsModel> getGroup(@PathVariable("groupId") @NotNull String id) {
+    public ResponseEntity<?> getGroup(@PathVariable("groupId") @NotNull String id) {
         log.info("id: {}", id);
-        return new ResponseEntity<>((GroupDetailsModel) userGroupService.getGroup(id), HttpStatus.OK); 
+
+        GroupDetailsModel response = (GroupDetailsModel) userGroupService.getGroup(id);
+
+        if (response == null) {
+            ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+            String currentUri = attr.getRequest().getRequestURI().toString();
+            List<String> message = new ArrayList<String>();
+            message.add("No data found for given group id");
+            ErrorResponse errorResponse = exceptionHandler.handleCustomException(
+                404, 
+                "1234", 
+                message, 
+                "NO_DATA_FOUND",
+                currentUri);
+            return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<GroupDetailsModel>(response, HttpStatus.OK); 
+    }
+
+    @PatchMapping (path = "/group/{groupId}")
+    public ResponseEntity<?> updateGroup(@PathVariable("groupId") @NotNull String id, @Valid @RequestBody GroupRequestModel request) {
+        log.info("id: {}", id);
+
+        Object response = userGroupService.updateGroup(id, request);
+
+        if (response == null) {
+            ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+            String currentUri = attr.getRequest().getRequestURI().toString();
+            List<String> message = new ArrayList<String>();
+            message.add("No data found for given user id");
+            ErrorResponse errorResponse = exceptionHandler.handleCustomException(
+                404, 
+                "1234", 
+                message, 
+                "NO_DATA_FOUND",
+                currentUri);
+            return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.NOT_FOUND);
+        }
+
+        if (response.getClass() == ErrorResponse.class) {
+            return new ResponseEntity<ErrorResponse>((ErrorResponse) response, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<GroupDetailsModel>((GroupDetailsModel) response, HttpStatus.OK);
     }
 
     @GetMapping (path = "/hello")

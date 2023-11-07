@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -42,6 +43,22 @@ public class GlobalExceptionHandler extends RuntimeException {
         return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleMethodNotSupportedException (HttpRequestMethodNotSupportedException ex, WebRequest request) {
+
+        List<String> errorMessages = new ArrayList<String>();
+        errorMessages.add(ex.getMessage());
+
+        errorResponse.setRequestId(request.getSessionId());
+        errorResponse.setTimeStamp(LocalDateTime.now());
+        errorResponse.setStatus(ex.getStatusCode().value());
+        errorResponse.setError((ex.getStatusCode().toString().split(" "))[1]);
+        errorResponse.setMessage(errorMessages);
+        errorResponse.setPath(request.getDescription(false));
+
+        return new ResponseEntity<ErrorResponse>(errorResponse, ex.getStatusCode());
+    }
+
     public ErrorResponse handleCustomException(int status, String requestId, List<String> message, String errorDesc, String uri) {
 
         errorResponse.setRequestId(requestId);
@@ -52,6 +69,22 @@ public class GlobalExceptionHandler extends RuntimeException {
         errorResponse.setPath(uri);
 
         return errorResponse;
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGenericException (Exception ex, WebRequest request) {
+
+        List<String> errorMessages = new ArrayList<String>();
+        errorMessages.add(ex.getMessage());
+
+        errorResponse.setRequestId(request.getSessionId());
+        errorResponse.setTimeStamp(LocalDateTime.now());
+        errorResponse.setStatus(500);
+        errorResponse.setError("INTERNAL_SERVER_ERROR");
+        errorResponse.setMessage(errorMessages);
+        errorResponse.setPath(request.getDescription(false));
+
+        return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }
