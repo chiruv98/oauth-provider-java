@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.oauthprovider.models.GroupDetailsModel;
 import com.oauthprovider.models.GroupRequestModel;
+import com.oauthprovider.models.UserRequestModel;
 import com.oauthprovider.entities.GroupEntity;
 import com.oauthprovider.exception.ErrorResponse;
 import com.oauthprovider.exception.GlobalExceptionHandler;
@@ -136,6 +137,13 @@ public class GroupServiceImpl implements UserGroupService {
         }
 
         return groupIdAndname;
+    }
+
+    @Override
+    public Object createUser (String groupId, UserRequestModel request) {
+
+        return null;
+
     }
 
 }

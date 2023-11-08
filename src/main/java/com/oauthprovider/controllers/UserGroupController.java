@@ -19,11 +19,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.oauthprovider.services.UserGroupService;
 import com.oauthprovider.models.GroupRequestModel;
+import com.oauthprovider.models.GroupDetailsModel;
+import com.oauthprovider.models.UserRequestModel;
+import com.oauthprovider.models.UserDetailsModel;
 import com.oauthprovider.exception.ErrorResponse;
 import com.oauthprovider.exception.GlobalExceptionHandler;
-import com.oauthprovider.models.GroupDetailsModel;
-import com.oauthprovider.services.UserGroupService;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -45,7 +47,7 @@ public class UserGroupController {
     @Autowired
     private GlobalExceptionHandler exceptionHandler;
 
-    @PostMapping (path = "/group")
+    @PostMapping (path = "/groups")
     public ResponseEntity<?> createGroup(@Valid @RequestBody GroupRequestModel request) throws MethodArgumentNotValidException {
 
         if (request.getGroupName().length() < 3) {
@@ -71,7 +73,7 @@ public class UserGroupController {
         return new ResponseEntity<GroupDetailsModel>((GroupDetailsModel) response, HttpStatus.OK);
     }
 
-    @GetMapping (path = "/group/{groupId}")
+    @GetMapping (path = "/groups/{groupId}")
     public ResponseEntity<?> getGroup(@PathVariable("groupId") @NotNull String id) {
         log.info("id: {}", id);
 
@@ -94,7 +96,7 @@ public class UserGroupController {
         return new ResponseEntity<GroupDetailsModel>(response, HttpStatus.OK); 
     }
 
-    @PatchMapping (path = "/group/{groupId}")
+    @PatchMapping (path = "/groups/{groupId}")
     public ResponseEntity<?> updateGroup(@PathVariable("groupId") @NotNull String id, @Valid @RequestBody GroupRequestModel request) {
         log.info("id: {}", id);
 
@@ -119,6 +121,13 @@ public class UserGroupController {
         }
 
         return new ResponseEntity<GroupDetailsModel>((GroupDetailsModel) response, HttpStatus.OK);
+    }
+
+    @PostMapping (path = "/groups/{groupId}/users")
+    public ResponseEntity<?> createUser (@PathVariable("groupId") @NotNull String id, @Valid @RequestBody UserRequestModel request) {
+
+        Object response = null;
+        return new ResponseEntity<UserDetailsModel>((UserDetailsModel) response, HttpStatus.OK);
     }
 
     @GetMapping (path = "/hello")
