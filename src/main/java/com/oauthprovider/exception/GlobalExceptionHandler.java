@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
 @ControllerAdvice
@@ -41,6 +42,22 @@ public class GlobalExceptionHandler extends RuntimeException {
         errorResponse.setPath(request.getDescription(false));
 
         return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException (EntityNotFoundException ex, WebRequest request) {
+
+        List<String> errorMessages = new ArrayList<String>();
+        errorMessages.add(ex.getMessage());
+
+        errorResponse.setRequestId(request.getSessionId());
+        errorResponse.setTimeStamp(LocalDateTime.now());
+        errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
+        errorResponse.setError(HttpStatus.NOT_FOUND.getReasonPhrase());
+        errorResponse.setMessage(errorMessages);
+        errorResponse.setPath(request.getDescription(false));
+
+        return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)

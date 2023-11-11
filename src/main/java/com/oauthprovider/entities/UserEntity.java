@@ -9,6 +9,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -30,6 +32,9 @@ public class UserEntity {
     @Column (name = "last_name", nullable = false)
     private String lastName;
 
+    @Column (name = "email", nullable = false)
+    private String email;
+
     @Column (name = "created_at", nullable = false)
     @CreationTimestamp
     @Temporal (TemporalType.TIMESTAMP)
@@ -39,5 +44,9 @@ public class UserEntity {
     @UpdateTimestamp
     @Temporal (TemporalType.TIMESTAMP)
     private String modifiedAt;
+
+    @ManyToOne
+    @JoinColumn (name = "group_id")
+    private GroupEntity group;
 
 }

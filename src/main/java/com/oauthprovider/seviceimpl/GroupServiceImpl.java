@@ -12,13 +12,13 @@ import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 
-import com.oauthprovider.services.UserGroupService;
+import com.oauthprovider.services.GroupService;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
 import com.oauthprovider.models.GroupDetailsModel;
 import com.oauthprovider.models.GroupRequestModel;
-import com.oauthprovider.models.UserRequestModel;
 import com.oauthprovider.entities.GroupEntity;
 import com.oauthprovider.exception.ErrorResponse;
 import com.oauthprovider.exception.GlobalExceptionHandler;
@@ -30,7 +30,7 @@ import com.oauthprovider.repositories.GroupRepository;
 
 @Service
 @Slf4j
-public class GroupServiceImpl implements UserGroupService {
+public class GroupServiceImpl implements GroupService {
  
     @Autowired
     GroupRepository groupRepository;
@@ -80,7 +80,7 @@ public class GroupServiceImpl implements UserGroupService {
 
         GroupDetailsModel groupDetailsModel = null;
 
-        Optional<GroupEntity> response = groupRepository.findById(id);
+        GroupEntity response = groupRepository.findById(id).orElseThrow(() ->new EntityNotFoundException("No data found for given group id"));
         groupDetailsModel = modelMapper.map(response, GroupDetailsModel.class);
 
         return groupDetailsModel;
@@ -93,9 +93,6 @@ public class GroupServiceImpl implements UserGroupService {
         log.info("id: {}", id);
 
         GroupDetailsModel groupDetailsModel = getGroup(id);
-        if (groupDetailsModel == null) {
-            return groupDetailsModel;
-        }
 
         HashMap checkGroupDetails = checkGroupName(request.getGroupName());
 
@@ -137,13 +134,6 @@ public class GroupServiceImpl implements UserGroupService {
         }
 
         return groupIdAndname;
-    }
-
-    @Override
-    public Object createUser (String groupId, UserRequestModel request) {
-
-        return null;
-
     }
 
 }
