@@ -3,12 +3,8 @@ package com.oauthprovider.models;
 import lombok.Data;
 
 @Data
-public class UserDetailsModel {
+public class UserDetailsModel extends UserBaseModel{
     
-    private String id;
-    private String firstname;
-    private String lastName;
-    private String email;
     private GroupDetailsModel group;
 
 }

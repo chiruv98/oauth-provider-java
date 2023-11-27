@@ -23,6 +23,7 @@ import com.oauthprovider.services.GroupService;
 import com.oauthprovider.services.UserService;
 import com.oauthprovider.models.GroupRequestModel;
 import com.oauthprovider.models.UserDetailsModel;
+import com.oauthprovider.models.UserListModel;
 import com.oauthprovider.models.UserRequestModel;
 import com.oauthprovider.models.GroupDetailsModel;
 import com.oauthprovider.exception.ErrorResponse;
@@ -119,7 +120,7 @@ public class UserGroupController {
 
     @GetMapping (path = "/groups/{groupId}/users")
     public ResponseEntity<?> listUsers (@PathVariable("groupId") @NotNull String groupId) {
-        List<UserDetailsModel> response = (List<UserDetailsModel>) userService.listUsers(groupId);
+        UserListModel response = (UserListModel) userService.listUsers(groupId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

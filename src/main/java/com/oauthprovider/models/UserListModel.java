@@ -1,11 +1,13 @@
 package com.oauthprovider.models;
 
-import org.hibernate.mapping.List;
+import java.util.List;
 
 import lombok.Data;
 
 @Data
 public class UserListModel {
-    private List userDetails;
 
+    private GroupDetailsModel group;
+    private List<UserBaseModel> users;
+    
 }

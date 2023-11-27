@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ import com.oauthprovider.entities.UserEntity;
 import com.oauthprovider.exception.ErrorResponse;
 import com.oauthprovider.exception.GlobalExceptionHandler;
 import com.oauthprovider.models.UserDetailsModel;
+import com.oauthprovider.models.UserListModel;
+import com.oauthprovider.models.GroupDetailsModel;
+import com.oauthprovider.models.UserBaseModel;
 import com.oauthprovider.models.UserRequestModel;
 import com.oauthprovider.repositories.GroupRepository;
 import com.oauthprovider.repositories.UserRepository;
@@ -74,13 +78,15 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<UserDetailsModel> listUsers (String groupId) {
+    public UserListModel listUsers (String groupId) {
         List<UserEntity> userEntity = (List<UserEntity>) userRepository.findByGroupId(groupId).orElseThrow(() -> new EntityNotFoundException("No data found for given group id"));
-        List<UserDetailsModel> userDetails = new ArrayList<>();
-        for (UserEntity user : userEntity) {
+        UserListModel usersList = new UserListModel();
+        /* for (UserEntity user : userEntity) {
             userDetails.add((UserDetailsModel) modelMapper.map(user, UserDetailsModel.class));
-        };
-        return userDetails;
+        }; */
+        usersList.setUsers(userEntity.stream().map(user -> modelMapper.map(user, UserBaseModel.class)).collect(Collectors.toList()));
+        usersList.setGroup((GroupDetailsModel) modelMapper.map(userEntity.get(0).getGroup(), GroupDetailsModel.class));
+        return usersList;
     }
 
     private HashMap<String, String> checkUserEmail (String email) {
